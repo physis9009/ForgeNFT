@@ -10,7 +10,7 @@ import {
 
 export const config = getDefaultConfig({
   appName: 'ForgeNFT',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'f303d0840ed203b37266c28324a31f2d',
   chains: [
     mainnet,
     polygon,

@@ -9,7 +9,7 @@ import {
 } from 'wagmi/chains';
 
 export const config = getDefaultConfig({
-  appName: 'RainbowKit App',
+  appName: 'ForgeNFT',
   projectId: 'YOUR_PROJECT_ID',
   chains: [
     mainnet,

@@ -2,14 +2,39 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains';
+import { sepolia } from 'wagmi/chains';
+import { useMintNFT } from '@/src/hooks/useMintNFT';
+import { useState } from 'react';
 
 function Page() {
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
+  const { mintNFT, isPending, isConfirming, isSuccess, error, hash } = useMintNFT();
 
-  const isWrongNetwork = isConnected && chainId !== baseSepolia.id;
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
+  const isWrongNetwork = isConnected && chainId !== sepolia.id;
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleMint = () => {
+    if (!image || !name) return;
+
+    // For now, use a placeholder URI
+    // In the next step, we'll upload to IPFS and get the real URI
+    const placeholderURI = `ipfs://placeholder/${name}`;
+    mintNFT(placeholderURI);
+  };
 
   return (
     <div className="min-h-screen">
@@ -20,12 +45,12 @@ function Page() {
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mx-4 mt-4 rounded">
           <p className="font-bold">Wrong Network</p>
-          <p className="text-sm">Please switch to Base Sepolia testnet</p>
+          <p className="text-sm">Please switch to Sepolia testnet</p>
           <button
-            onClick={() => switchChain({ chainId: baseSepolia.id })}
+            onClick={() => switchChain({ chainId: sepolia.id })}
             className="mt-2 bg-yellow-500 text-white px-4 py-1 rounded text-sm"
           >
-            Switch to Base Sepolia
+            Switch to Sepolia
           </button>
         </div>
       )}
@@ -40,10 +65,72 @@ function Page() {
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-6">Start Minting</h2>
             <div className="border rounded-lg p-6">
-              <p className="mb-4">Upload image and fill details to mint your NFT</p>
-              <button className="bg-blue-500 text-white px-6 py-2 rounded">
-                Mint NFT
+              <div className="mb-4">
+                <label className="block mb-2">Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full"
+                />
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="mt-2 w-32 h-32 object-cover"
+                  />
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-2">Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border p-2 rounded"
+                  placeholder="NFT Name"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-2">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full border p-2 rounded"
+                  placeholder="NFT Description"
+                  rows={3}
+                />
+              </div>
+
+              <button
+                onClick={handleMint}
+                disabled={!image || !name || isPending || isConfirming}
+                className="bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
+              >
+                {isPending || isConfirming ? 'Minting...' : 'Mint NFT'}
               </button>
+
+              {error && (
+                <p className="mt-2 text-red-500">
+                  Error: {error.message}
+                </p>
+              )}
+
+              {isSuccess && hash && (
+                <p className="mt-2 text-green-500">
+                  Success! Transaction:{' '}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    {hash}
+                  </a>
+                </p>
+              )}
             </div>
           </section>
         ) : (

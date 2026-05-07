@@ -2,7 +2,6 @@
   "name": "forge-nft",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -22,9 +21,9 @@
     "wagmi": "^2.19.3"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
     "@openzeppelin/contracts": "^5.6.1",
     "@tailwindcss/postcss": "^4.2.4",
+    "@types/chai": "^5.2.3",
     "@types/node": "^22.19.1",
     "@types/react": "^19.1.8",
     "chai": "^6.2.2",

@@ -5,6 +5,8 @@ import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { useMintNFT } from '@/src/hooks/useMintNFT';
 import { useState } from 'react';
+import { uploadToPinata, uploadJSONToPinata } from '@/src/lib/ipfs';
+import { generateNFTMetadata } from '@/src/lib/metadata';
 
 function Page() {
   const { isConnected } = useAccount();
@@ -16,6 +18,8 @@ function Page() {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const isWrongNetwork = isConnected && chainId !== sepolia.id;
 
@@ -27,13 +31,33 @@ function Page() {
     }
   };
 
-  const handleMint = () => {
+  const handleMint = async () => {
     if (!image || !name) return;
 
-    // For now, use a placeholder URI
-    // In the next step, we'll upload to IPFS and get the real URI
-    const placeholderURI = `ipfs://placeholder/${name}`;
-    mintNFT(placeholderURI);
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      // Step 1: Upload image to IPFS
+      const imageCID = await uploadToPinata(image);
+
+      // Step 2: Generate NFT metadata
+      const metadata = generateNFTMetadata(name, description, imageCID);
+
+      // Step 3: Upload metadata to IPFS
+      const metadataCID = await uploadJSONToPinata(metadata);
+
+      // Step 4: Create IPFS URI
+      const ipfsURI = `ipfs://${metadataCID}`;
+
+      // Step 5: Mint NFT with IPFS URI
+      mintNFT(ipfsURI);
+    } catch (error) {
+      console.error('Error during minting process:', error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload to IPFS');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -106,11 +130,17 @@ function Page() {
 
               <button
                 onClick={handleMint}
-                disabled={!image || !name || isPending || isConfirming}
+                disabled={!image || !name || isPending || isConfirming || isUploading}
                 className="bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
               >
-                {isPending || isConfirming ? 'Minting...' : 'Mint NFT'}
+                {isUploading ? 'Uploading to IPFS...' : isPending || isConfirming ? 'Minting...' : 'Mint NFT'}
               </button>
+
+              {uploadError && (
+                <p className="mt-2 text-red-500">
+                  Upload Error: {uploadError}
+                </p>
+              )}
 
               {error && (
                 <p className="mt-2 text-red-500">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { FORGE_NFT_CONFIG } from '@/src//config/forgeNFT';
+import { FORGE_NFT_CONFIG } from '@/src/config/forgeNFT';
 
 export function useMintNFT() {
   const { data: hash, writeContract, isPending, error } = useWriteContract();

@@ -1,8 +1,16 @@
 'use client';
 
 import { useReadContract } from 'wagmi';
-import { FORGE_NFT_CONFIG } from '@/config/forgeNFT';
+import { FORGE_NFT_CONFIG } from '@/src/config/forgeNFT';
 import { useAccount } from 'wagmi';
+import { fetchNFTMetadata, getIPFSImageURL, NFTMetadata } from '@/src/lib/nftMetadata';
+import { useState, useEffect } from 'react';
+
+export interface UserNFT {
+  tokenId: bigint;
+  metadata: NFTMetadata | null;
+  imageUrl: string;
+}
 
 export function useUserNFTs() {
   const { address } = useAccount();
@@ -20,9 +28,77 @@ export function useUserNFTs() {
     functionName: 'totalSupply',
   });
 
+  const [userNFTs, setUserNFTs] = useState<UserNFT[]>([]);
+  const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
+
+  // Fetch user's NFTs when balance changes
+  useEffect(() => {
+    async function fetchUserNFTs() {
+      if (!address || !balance || balance === 0n) {
+        setUserNFTs([]);
+        return;
+      }
+
+      setIsLoadingNFTs(true);
+      const nfts: UserNFT[] = [];
+
+      try {
+        // Iterate through all tokens to find user's NFTs
+        const total = totalSupply || 0n;
+
+        for (let i = 1n; i <= total; i++) {
+          try {
+            // Check if this token belongs to the user
+            const ownerResponse = await fetch('/api/ownerOf', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tokenId: i.toString() }),
+            });
+
+            if (ownerResponse.ok) {
+              const ownerData = await ownerResponse.json();
+              if (ownerData.owner?.toLowerCase() === address.toLowerCase()) {
+                // Get tokenURI
+                const uriResponse = await fetch('/api/tokenURI', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ tokenId: i.toString() }),
+                });
+
+                if (uriResponse.ok) {
+                  const uriData = await uriResponse.json();
+                  const metadata = await fetchNFTMetadata(uriData.tokenURI);
+                  const imageUrl = metadata ? getIPFSImageURL(metadata.image) : '';
+
+                  nfts.push({
+                    tokenId: i,
+                    metadata,
+                    imageUrl,
+                  });
+                }
+              }
+            }
+          } catch (error) {
+            console.error(`Error fetching token ${i}:`, error);
+          }
+        }
+
+        setUserNFTs(nfts);
+      } catch (error) {
+        console.error('Error fetching user NFTs:', error);
+      } finally {
+        setIsLoadingNFTs(false);
+      }
+    }
+
+    fetchUserNFTs();
+  }, [address, balance, totalSupply]);
+
   return {
     balance,
     totalSupply,
+    userNFTs,
     isLoadingBalance,
+    isLoadingNFTs,
   };
 }

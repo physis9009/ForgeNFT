@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create provider and contract
-    const provider = new ethers.JsonRpcProvider('https://rpc.sepolia.org');
+    const provider = new ethers.JsonRpcProvider("https://sepolia.gateway.tenderly.co");
     const contract = new ethers.Contract(CONTRACT_ADDRESS!, contractABI, provider);
 
     // Get owner

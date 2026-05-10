@@ -34,7 +34,7 @@ export function useUserNFTs() {
   // Fetch user's NFTs when balance changes
   useEffect(() => {
     async function fetchUserNFTs() {
-      if (!address || !balance || balance === 0n) {
+      if (!address || !balance || balance === BigInt(0)) {
         setUserNFTs([]);
         return;
       }
@@ -44,11 +44,11 @@ export function useUserNFTs() {
 
       try {
         // Iterate through all tokens to find user's NFTs
-        const total = totalSupply || 0n;
+        const total = (totalSupply as bigint) || BigInt(0);
 
-        for (let i = 1n; i <= total; i++) {
+        for (let i = BigInt(1); i <= total; i++) {
           try {
-            // Check if this token belongs to the user
+            // Check if this token belongs to the user using wagmi
             const ownerResponse = await fetch('/api/ownerOf', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -58,7 +58,7 @@ export function useUserNFTs() {
             if (ownerResponse.ok) {
               const ownerData = await ownerResponse.json();
               if (ownerData.owner?.toLowerCase() === address.toLowerCase()) {
-                // Get tokenURI
+                // Get tokenURI using wagmi
                 const uriResponse = await fetch('/api/tokenURI', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },

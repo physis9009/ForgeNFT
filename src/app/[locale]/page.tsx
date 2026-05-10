@@ -4,6 +4,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { useMintNFT } from '@/src/hooks/useMintNFT';
+import { useUserNFTs } from '@/src/hooks/useUserNFTs';
+import { NFTCard } from '@/src/components/NFTCard';
 import { useState } from 'react';
 import { uploadToPinata, uploadJSONToPinata } from '@/src/lib/ipfs';
 import { generateNFTMetadata } from '@/src/lib/metadata';
@@ -13,6 +15,7 @@ function Page() {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { mintNFT, isPending, isConfirming, isSuccess, error, hash } = useMintNFT();
+  const { userNFTs, isLoadingNFTs, balance } = useUserNFTs();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -170,16 +173,42 @@ function Page() {
         )}
 
         <section>
-          <h2 className="text-2xl font-semibold mb-6">Recent Mints</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="border rounded-lg p-4">
-                <div className="aspect-square bg-gray-200 mb-4"></div>
-                <h3 className="font-semibold">NFT #{i}</h3>
-                <p className="text-sm text-gray-600">Sample NFT description</p>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-2xl font-semibold mb-6">
+            {isConnected ? 'My NFTs' : 'Recent Mints'}
+          </h2>
+
+          {isConnected ? (
+            <>
+              {isLoadingNFTs ? (
+                <p className="text-center text-gray-600">Loading your NFTs...</p>
+              ) : userNFTs.length > 0 ? (
+                <>
+                  <p className="mb-4 text-gray-600">
+                    You own {userNFTs.length} NFT{userNFTs.length !== 1 ? 's' : ''}
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {userNFTs.map((nft) => (
+                      <NFTCard key={nft.tokenId.toString()} nft={nft} />
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-center text-gray-600">
+                  You haven't minted any NFTs yet. Start minting above!
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="border rounded-lg p-4">
+                  <div className="aspect-square bg-gray-200 mb-4"></div>
+                  <h3 className="font-semibold">NFT #{i}</h3>
+                  <p className="text-sm text-gray-600">Sample NFT description</p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>

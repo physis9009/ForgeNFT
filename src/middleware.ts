@@ -3,12 +3,11 @@ import type { NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/', '/(de|en)/:path*'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|robots.txt|.*\\..*).*)'],
 };
 
 const handleI18nRouting = createMiddleware(routing);
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   return handleI18nRouting(request);
 }

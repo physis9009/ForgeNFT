@@ -1,5 +1,5 @@
-import { CONTRACT_ADDRESS } from '@/src/config/contract';
-import contractABI from '@/src/contracts/ForgeNFT.json';
+import { CONTRACT_ADDRESS } from './contractAddr';
+import contractABI from '@/src/abi/ForgeNFT.json';
 
 export const FORGE_NFT_CONFIG = {
   address: CONTRACT_ADDRESS as `0x${string}`,

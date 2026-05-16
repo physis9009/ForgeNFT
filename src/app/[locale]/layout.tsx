@@ -1,8 +1,8 @@
-import '../styles/global.css';
+import '@/src/styles/global.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@rainbow-me/rainbowkit';
-import { Providers } from './[locale]/providers';
+import { Providers } from './providers';
 
 export function generateStaticParams() {
   return [{ locale: 'en-US' }, { locale: 'zh-CN' }];

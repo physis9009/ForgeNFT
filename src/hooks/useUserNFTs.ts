@@ -3,7 +3,7 @@
 import { useReadContract } from 'wagmi';
 import { FORGE_NFT_CONFIG } from '@/src/config/forgeNFT';
 import { useAccount } from 'wagmi';
-import { fetchNFTMetadata, getIPFSImageURL, NFTMetadata } from '@/src/lib/nftMetadata';
+import { fetchNFTMetadata, getIPFSImageURL, type NFTMetadata } from '@/src/lib/nftMetadata';
 import { useState, useEffect } from 'react';
 
 export interface UserNFT {

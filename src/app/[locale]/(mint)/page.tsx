@@ -1,6 +1,5 @@
 'use client';
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { useMintNFT } from '@/src/hooks/useMintNFT';
@@ -10,7 +9,7 @@ import { useState } from 'react';
 import { uploadToPinata, uploadJSONToPinata } from '@/src/lib/ipfs';
 import { generateNFTMetadata } from '@/src/lib/metadata';
 
-function Page() {
+export default function Page() {
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -64,11 +63,7 @@ function Page() {
   };
 
   return (
-    <div className="min-h-screen">
-      <header className="p-4 flex justify-end">
-        <ConnectButton />
-      </header>
-
+    <>
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mx-4 mt-4 rounded">
           <p className="font-bold">Wrong Network</p>
@@ -211,8 +206,6 @@ function Page() {
           )}
         </section>
       </main>
-    </div>
+    </>
   );
 }
-
-export default Page;

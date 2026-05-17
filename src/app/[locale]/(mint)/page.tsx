@@ -3,18 +3,22 @@
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { useMintNFT } from '@/src/hooks/useMintNFT';
-import { useUserNFTs } from '@/src/hooks/useUserNFTs';
-import { NFTCard } from '@/src/components/NFTCard';
 import { useState } from 'react';
 import { uploadToPinata, uploadJSONToPinata } from '@/src/lib/ipfs';
 import { generateNFTMetadata } from '@/src/lib/metadata';
+import {Silkscreen} from 'next/font/google';
+
+const silkscreen = Silkscreen({
+  weight: "400",
+  style: "normal",
+  subsets: ['latin']
+})
 
 export default function Page() {
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { mintNFT, isPending, isConfirming, isSuccess, error, hash } = useMintNFT();
-  const { userNFTs, isLoadingNFTs, balance } = useUserNFTs();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -63,7 +67,7 @@ export default function Page() {
   };
 
   return (
-    <>
+    <div className={`${silkscreen.className}`}>
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mx-4 mt-4 rounded">
           <p className="font-bold">Wrong Network</p>
@@ -78,16 +82,13 @@ export default function Page() {
       )}
 
       <main className="container mx-auto px-4 py-8">
-        <section className="mb-12 text-center">
-          <h1 className="text-4xl font-bold mb-4">ForgeNFT</h1>
-          <p className="text-lg text-gray-600">Mint your unique NFT</p>
-        </section>
+        <h1 className="text-4xl font-bold mb-16 mt-20 text-center">Mint your unique NFT</h1>
 
         {isConnected ? (
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-6">Start Minting</h2>
-            <div className="border rounded-lg p-6">
-              <div className="mb-4">
+            <div className="grid grid-cols-6 gap-2 p-6">
+              <div className="mb-4 col-span-2 col-start-2">
                 <label className="block mb-2">Image</label>
                 <input
                   type="file"
@@ -104,7 +105,7 @@ export default function Page() {
                 )}
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 col-span-2 col-start-2">
                 <label className="block mb-2">Name</label>
                 <input
                   type="text"
@@ -115,7 +116,7 @@ export default function Page() {
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 col-span-4 col-start-2">
                 <label className="block mb-2">Description</label>
                 <textarea
                   value={description}
@@ -125,87 +126,48 @@ export default function Page() {
                   rows={3}
                 />
               </div>
-
-              <button
-                onClick={handleMint}
-                disabled={!image || !name || isPending || isConfirming || isUploading}
-                className="bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
-              >
-                {isUploading ? 'Uploading to IPFS...' : isPending || isConfirming ? 'Minting...' : 'Mint NFT'}
-              </button>
-
-              {uploadError && (
-                <p className="mt-2 text-red-500">
-                  Upload Error: {uploadError}
-                </p>
-              )}
-
-              {error && (
-                <p className="mt-2 text-red-500">
-                  Error: {error.message}
-                </p>
-              )}
-
-              {isSuccess && hash && (
-                <p className="mt-2 text-green-500">
-                  Success! Transaction:{' '}
-                  <a
-                    href={`https://sepolia.etherscan.io/tx/${hash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    {hash}
-                  </a>
-                </p>
-              )}
             </div>
+
+            <button
+              onClick={handleMint}
+              disabled={!image || !name || isPending || isConfirming || isUploading}
+              className="bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
+            >
+              {isUploading ? 'Uploading to IPFS...' : isPending || isConfirming ? 'Minting...' : 'Mint NFT'}
+            </button>
+
+            {uploadError && (
+              <p className="mt-2 text-red-500">
+                Upload Error: {uploadError}
+              </p>
+            )}
+
+            {error && (
+              <p className="mt-2 text-red-500">
+                Error: {error.message}
+              </p>
+            )}
+
+            {isSuccess && hash && (
+              <p className="mt-2 text-green-500">
+                Success! Transaction:{' '}
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  {hash}
+                </a>
+              </p>
+            )}
           </section>
         ) : (
           <section className="mb-12 text-center">
             <p className="text-lg">Please connect wallet to start minting</p>
           </section>
         )}
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-6">
-            {isConnected ? 'My NFTs' : 'Recent Mints'}
-          </h2>
-
-          {isConnected ? (
-            <>
-              {isLoadingNFTs ? (
-                <p className="text-center text-gray-600">Loading your NFTs...</p>
-              ) : userNFTs.length > 0 ? (
-                <>
-                  <p className="mb-4 text-gray-600">
-                    You own {userNFTs.length} NFT{userNFTs.length !== 1 ? 's' : ''}
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {userNFTs.map((nft) => (
-                      <NFTCard key={nft.tokenId.toString()} nft={nft} />
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <p className="text-center text-gray-600">
-                  You haven't minted any NFTs yet. Start minting above!
-                </p>
-              )}
-            </>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="border rounded-lg p-4">
-                  <div className="aspect-square bg-gray-200 mb-4"></div>
-                  <h3 className="font-semibold">NFT #{i}</h3>
-                  <p className="text-sm text-gray-600">Sample NFT description</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
       </main>
-    </>
+    </div>
   );
 }

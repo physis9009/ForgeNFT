@@ -33,7 +33,7 @@ export default async function LocaleLayout(props: {
 
   return (
     <html lang={locale}>
-      <body>
+      <body className='bg-wht text-blk-md selection:bg-grn-gr selection:text-wht'>
         <Providers locale={locale}>{children}</Providers>
       </body>
     </html>

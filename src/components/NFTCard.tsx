@@ -2,9 +2,11 @@ import { UserNFT } from '@/src/hooks/useUserNFTs';
 
 interface NFTCardProps {
   nft: UserNFT;
+  onBurn?: (tokenId: bigint) => void;
+  isBurning?: boolean;
 }
 
-export function NFTCard({ nft }: NFTCardProps) {
+export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
   return (
     <div className="border rounded-lg p-4">
       <div className="aspect-square bg-gray-200 mb-4 overflow-hidden">
@@ -27,6 +29,16 @@ export function NFTCard({ nft }: NFTCardProps) {
         {nft.metadata?.description || 'No description'}
       </p>
       <p className="text-xs text-gray-400 mt-2">Token ID: {nft.tokenId.toString()}</p>
+
+      {onBurn && (
+        <button
+          onClick={() => onBurn(nft.tokenId)}
+          disabled={isBurning}
+          className="mt-3 bg-red-500 text-white px-3 py-1 rounded text-sm disabled:bg-gray-400"
+        >
+          {isBurning ? 'Burning...' : 'Burn'}
+        </button>
+      )}
     </div>
   );
 }

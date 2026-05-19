@@ -1,10 +1,11 @@
 'use client';
 
-import { useReadContract } from 'wagmi';
+import { useReadContract, useReadContracts } from 'wagmi';
 import { FORGE_NFT_CONFIG } from '@/src/config/forgeNFT';
 import { useAccount } from 'wagmi';
 import { fetchNFTMetadata, getIPFSImageURL, type NFTMetadata } from '@/src/lib/nftMetadata';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { type Abi } from 'viem';
 
 export interface UserNFT {
   tokenId: bigint;
@@ -14,91 +15,91 @@ export interface UserNFT {
 
 export function useUserNFTs() {
   const { address } = useAccount();
+
   const { data: balance, isLoading: isLoadingBalance } = useReadContract({
     ...FORGE_NFT_CONFIG,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: {
-      enabled: !!address,
-    },
+    query: { enabled: !!address },
   });
 
-  const { data: totalSupply } = useReadContract({
-    ...FORGE_NFT_CONFIG,
-    functionName: 'totalSupply',
+  const indices = useMemo(() => {
+    if (!balance || balance === BigInt(0)) return [];
+    return Array.from({ length: Number(balance) }, (_, i) => BigInt(i));
+  }, [balance]);
+
+  const { data: tokenIdsRaw, isLoading: isLoadingTokenIds } = useReadContracts({
+    contracts: indices.map((index) => ({
+      ...FORGE_NFT_CONFIG,
+      abi: FORGE_NFT_CONFIG.abi as Abi,
+      functionName: 'tokenOfOwnerByIndex',
+      args: [address!, index],
+    })),
+    query: { enabled: !!address && indices.length > 0 },
+  });
+
+  const tokenIds: bigint[] = useMemo(() => {
+    if (!tokenIdsRaw) return [];
+    return tokenIdsRaw
+      .filter((result) => result.status === 'success')
+      .map((result) => result.result as bigint);
+  }, [tokenIdsRaw]);
+
+  const { data: urisRaw, isLoading: isLoadingUris } = useReadContracts({
+    contracts: tokenIds.map((tokenId) => ({
+      ...FORGE_NFT_CONFIG,
+      abi: FORGE_NFT_CONFIG.abi as Abi, 
+      functionName: 'tokenURI',
+      args: [tokenId],
+    })),
+    query: { enabled: tokenIds.length > 0 },
   });
 
   const [userNFTs, setUserNFTs] = useState<UserNFT[]>([]);
-  const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
+  const [isLoadingMetadata, setIsLoadingMetadata] = useState(false);
 
-  // Fetch user's NFTs when balance changes
   useEffect(() => {
-    async function fetchUserNFTs() {
-      if (!address || !balance || balance === BigInt(0)) {
-        setUserNFTs([]);
-        return;
-      }
-
-      setIsLoadingNFTs(true);
-      const nfts: UserNFT[] = [];
-
-      try {
-        // Iterate through all tokens to find user's NFTs
-        const total = (totalSupply as bigint) || BigInt(0);
-
-        for (let i = BigInt(1); i <= total; i++) {
-          try {
-            // Check if this token belongs to the user using wagmi
-            const ownerResponse = await fetch('/api/ownerOf', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ tokenId: i.toString() }),
-            });
-
-            if (ownerResponse.ok) {
-              const ownerData = await ownerResponse.json();
-              if (ownerData.owner?.toLowerCase() === address.toLowerCase()) {
-                // Get tokenURI using wagmi
-                const uriResponse = await fetch('/api/tokenURI', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ tokenId: i.toString() }),
-                });
-
-                if (uriResponse.ok) {
-                  const uriData = await uriResponse.json();
-                  const metadata = await fetchNFTMetadata(uriData.tokenURI);
-                  const imageUrl = metadata ? getIPFSImageURL(metadata.image) : '';
-
-                  nfts.push({
-                    tokenId: i,
-                    metadata,
-                    imageUrl,
-                  });
-                }
-              }
-            }
-          } catch (error) {
-            console.error(`Error fetching token ${i}:`, error);
-          }
-        }
-
-        setUserNFTs(nfts);
-      } catch (error) {
-        console.error('Error fetching user NFTs:', error);
-      } finally {
-        setIsLoadingNFTs(false);
-      }
+    if (!urisRaw || urisRaw.length === 0 || tokenIds.length === 0) {
+      setUserNFTs([]);
+      return;
     }
 
-    fetchUserNFTs();
-  }, [address, balance, totalSupply]);
+    let cancelled = false;
+    setIsLoadingMetadata(true);
+
+    (async () => {
+      const nfts: UserNFT[] = [];
+      for (let i = 0; i < tokenIds.length; i++) {
+        if (cancelled) break;
+        const result = urisRaw[i];
+        if (result.status !== 'success') continue;
+
+        try {
+          const uri = result.result as string;
+          const metadata = await fetchNFTMetadata(uri);
+          const imageUrl = metadata ? getIPFSImageURL(metadata.image) : '';
+          nfts.push({ tokenId: tokenIds[i], metadata, imageUrl });
+        } catch (err) {
+          console.error(`Failed to load metadata for token ${tokenIds[i]}`, err);
+          nfts.push({ tokenId: tokenIds[i], metadata: null, imageUrl: '' });
+        }
+      }
+
+      if (!cancelled) {
+        setUserNFTs(nfts);
+        setIsLoadingMetadata(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      setIsLoadingMetadata(false);
+    };
+  }, [urisRaw, tokenIds]);
 
   return {
     balance,
-    totalSupply,
     userNFTs,
-    isLoadingBalance,
-    isLoadingNFTs,
+    isLoadingNFTs: isLoadingBalance || isLoadingTokenIds || isLoadingUris || isLoadingMetadata,
   };
 }

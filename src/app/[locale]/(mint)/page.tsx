@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { useMintNFT } from '@/src/hooks/useMintNFT';
@@ -26,6 +26,8 @@ export default function Page() {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isWrongNetwork = isConnected && chainId !== sepolia.id;
 
@@ -56,6 +58,10 @@ export default function Page() {
     setImage(file);
     // 生成一个本地预览用的临时 URL，并保存到状态
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleMint = async () => {
@@ -98,20 +104,28 @@ export default function Page() {
       )}
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-16 mt-20 text-center">Mint your unique NFT</h1>
+        <h1 className="text-4xl font-bold mb-16 mt-25 text-center">Mint your unique NFT</h1>
 
         {isConnected ? (
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6">Start Minting</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-center">Start Minting</h2>
             <div className="grid grid-cols-6 gap-2 p-6">
-              <div className="mb-4 col-span-2 col-start-2">
+              <div className="mb-4 col-span-1 col-start-2">
                 <label className="block mb-2">Image</label>
                 <input
                   type="file"
                   accept="image/*"
+                  ref={fileInputRef}
                   onChange={handleImageChange}
-                  className="w-full"
+                  className="hidden"
                 />
+                <button
+                  type="button"
+                  onClick={handleButtonClick}
+                  className="px-4 py-2 bg-grn-gr hover:bg-grn text-wht rounded"
+                >
+                  Choose Image
+                </button>
                 {imagePreview && (
                   <img
                     src={imagePreview}
@@ -121,7 +135,7 @@ export default function Page() {
                 )}
               </div>
 
-              <div className="mb-4 col-span-2 col-start-2">
+              <div className="mb-4 col-span-3 col-start-3">
                 <label className="block mb-2">Name</label>
                 <input
                   type="text"
@@ -142,37 +156,39 @@ export default function Page() {
                   rows={3}
                 />
               </div>
+
+              <button
+                onClick={handleMint}
+                disabled={isButtonDisabled}
+                className="bg-grn-gr hover:bg-grn text-wht px-4 py-2 rounded disabled:bg-wht-md disabled:text-grn-gr col-span-2 col-start-3 justify-self-center"
+              >
+                {isUploading
+                  ? 'Uploading to IPFS...'
+                  : isPending || isConfirming
+                  ? 'Minting...'
+                  : 'Mint NFT'}
+              </button>
+
+              {uploadError && <p className="mt-2 text-red-500">Upload Error: {uploadError}</p>}
+
+              {error && <p className="mt-2 text-red-500">Transaction Error: {error.message}</p>}
+
+              {isSuccess && hash && (
+                <p className="mt-2 text-grn">
+                  Success!{' '}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    View on Etherscan
+                  </a>
+                </p>
+              )}
             </div>
 
-            <button
-              onClick={handleMint}
-              disabled={isButtonDisabled}
-              className="bg-blue-500 text-white px-6 py-2 rounded disabled:bg-gray-400"
-            >
-              {isUploading
-                ? 'Uploading to IPFS...'
-                : isPending || isConfirming
-                ? 'Minting...'
-                : 'Mint NFT'}
-            </button>
-
-            {uploadError && <p className="mt-2 text-red-500">Upload Error: {uploadError}</p>}
-
-            {error && <p className="mt-2 text-red-500">Transaction Error: {error.message}</p>}
-
-            {isSuccess && hash && (
-              <p className="mt-2 text-grn">
-                Success!{' '}
-                <a
-                  href={`https://sepolia.etherscan.io/tx/${hash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  View on Etherscan
-                </a>
-              </p>
-            )}
+            
           </section>
         ) : (
           <section className="mb-12 text-center">

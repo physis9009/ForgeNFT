@@ -1,4 +1,11 @@
 import { UserNFT } from '@/src/hooks/useUserNFTs';
+import { Silkscreen } from 'next/font/google';
+
+const silkscreen = Silkscreen({
+  weight: '400',
+  style: 'normal',
+  subsets: ['latin'],
+});
 
 interface NFTCardProps {
   nft: UserNFT;
@@ -34,7 +41,7 @@ export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
         <button
           onClick={() => onBurn(nft.tokenId)}
           disabled={isBurning}
-          className="mt-3 bg-red-500 text-white px-3 py-1 rounded text-sm disabled:bg-gray-400"
+          className={`${silkscreen.className} mt-3 bg-pnk-gr hover:bg-pnk text-blk px-3 py-1 rounded text-sm disabled:bg-wht-md disabled:text-grn-gr`}
         >
           {isBurning ? 'Burning...' : 'Burn'}
         </button>

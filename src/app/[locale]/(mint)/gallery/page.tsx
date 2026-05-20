@@ -6,6 +6,13 @@ import { sepolia } from 'wagmi/chains';
 import { useUserNFTs } from '@/src/hooks/useUserNFTs';
 import { useBurnNFT } from '@/src/hooks/useBurnNFT';
 import { NFTCard } from '@/src/components/NFTCard';
+import { Silkscreen } from 'next/font/google';
+
+const silkscreen = Silkscreen({
+  weight: '400',
+  style: 'normal',
+  subsets: ['latin'],
+});
 
 export default function GalleryPage() {
   const { isConnected } = useAccount();
@@ -30,17 +37,17 @@ export default function GalleryPage() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-semibold mb-6">
+      <h2 className={`${silkscreen.className} text-2xl font-semibold mb-6 mt-16`}>
         {isConnected ? 'My NFTs' : 'Recent Mints'}
       </h2>
 
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mb-6 rounded">
-          <p className="font-bold">Wrong Network</p>
-          <p className="text-sm">Please switch to Sepolia testnet to view your NFTs</p>
+          <p className={`${silkscreen.className} font-bold`}>Wrong Network</p>
+          <p className={`${silkscreen.className} text-sm`}>Please switch to Sepolia testnet to view your NFTs</p>
           <button
             onClick={() => switchChain({ chainId: sepolia.id })}
-            className="mt-2 bg-yellow-500 text-white px-4 py-1 rounded text-sm"
+            className={`${silkscreen.className} mt-2 bg-yellow-500 text-white px-4 py-1 rounded text-sm`}
           >
             Switch to Sepolia
           </button>
@@ -49,10 +56,10 @@ export default function GalleryPage() {
 
       {isConnected ? (
         isLoadingNFTs ? (
-          <p className="text-center text-gray-600">Loading your NFTs...</p>
+          <p className={`${silkscreen.className} text-center text-gray-600`}>Loading your NFTs...</p>
         ) : userNFTs.length > 0 ? (
           <>
-            <p className="mb-4 text-gray-600">
+            <p className={`${silkscreen.className} mb-4 text-gray-600`}>
               You own {userNFTs.length} NFT{userNFTs.length !== 1 ? 's' : ''}
             </p>
 

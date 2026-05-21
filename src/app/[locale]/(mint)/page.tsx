@@ -89,7 +89,7 @@ export default function Page() {
     !image || !name || isPending || isConfirming || isUploading || isWrongNetwork;
 
   return (
-    <div className={silkscreen.className}>
+    <div className={`${silkscreen.className} flex-1`}>
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mx-4 mt-4 rounded">
           <p className="font-bold">Wrong Network</p>

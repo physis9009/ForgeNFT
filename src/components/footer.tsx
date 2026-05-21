@@ -45,7 +45,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-wht-gr text-blk-gr mt-auto bottom-0">
+      <footer className="bg-wht-gr text-blk-gr mt-auto bottom-0 w-full">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex flex-col sm:flex-row justify-evenly gap-6">
             <div className="flex-1 min-w-50 max-w-100">
@@ -149,16 +149,16 @@ export default function Footer() {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-wht-md/90 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto border border-wht-gr">
-            <div className="sticky top-0 bg-wht-md/90 px-5 border-blk-gr flex justify-between items-center">
+            <div className="sticky top-0 bg-wht-md/90 px-5 border-blk-gr flex justify-between items-center pb-0 mb-0">
               <h3 className="text-blk-md font-semibold">Contract ABI (JSON)</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-pnk-gr hover:text-pnk text-xl leading-none"
+                className="text-pnk-gr hover:text-pnk text-xl leading-none border-wht-md"
               >
                 &times;
               </button>
             </div>
-            <div className="px-5">
+            <div className="px-5 pt-0 mt-0">
               <pre className="bg-blk/90 text-wht-gr rounded-lg text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all max-h-80">
                 {JSON.stringify(contractABI, null, 2)}
               </pre>

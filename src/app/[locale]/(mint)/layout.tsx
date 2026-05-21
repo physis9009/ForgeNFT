@@ -11,7 +11,7 @@ export default async function Layout({children, params}: {
     const {locale} = await params;
 
     return (
-        <div className="min-h-screen"> 
+        <div className="min-h-screen flex flex-col"> 
             <nav className="grid grid-cols-5 justify-around justify-items-center fixed top-0 left-0 right-0 backdrop-blur-md shadow-lg items-center">
                 <MintLink locale={locale} />
                 <GalleryLink locale={locale} />

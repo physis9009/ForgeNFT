@@ -7,6 +7,7 @@ import { useUserNFTs } from '@/src/hooks/useUserNFTs';
 import { useBurnNFT } from '@/src/hooks/useBurnNFT';
 import { NFTCard } from '@/src/components/NFTCard';
 import { Silkscreen } from 'next/font/google';
+import { useTranslations } from 'next-intl';
 
 const silkscreen = Silkscreen({
   weight: '400',
@@ -15,6 +16,7 @@ const silkscreen = Silkscreen({
 });
 
 export default function GalleryPage() {
+  const t = useTranslations('GalleryPage');
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -38,47 +40,47 @@ export default function GalleryPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <h2 className={`${silkscreen.className} text-2xl font-semibold mb-6 mt-16`}>
-        {isConnected ? 'My NFTs' : 'Recent Mints'}
+        {isConnected ? t('titleConnected') : t('titleDisconnected')}
       </h2>
 
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mb-6 rounded">
-          <p className={`${silkscreen.className} font-bold`}>Wrong Network</p>
-          <p className={`${silkscreen.className} text-sm`}>Please switch to Sepolia testnet to view your NFTs</p>
+          <p className={`${silkscreen.className} font-bold`}>{t('wrongNetwork.title')}</p>
+          <p className={`${silkscreen.className} text-sm`}>{t('wrongNetwork.message')}</p>
           <button
             onClick={() => switchChain({ chainId: sepolia.id })}
             className={`${silkscreen.className} mt-2 bg-yellow-500 text-white px-4 py-1 rounded text-sm`}
           >
-            Switch to Sepolia
+            {t('wrongNetwork.button')}
           </button>
         </div>
       )}
 
       {isConnected ? (
         isLoadingNFTs ? (
-          <p className={`${silkscreen.className} text-center text-gray-600`}>Loading your NFTs...</p>
+          <p className={`${silkscreen.className} text-center text-gray-600`}>{t('loading')}</p>
         ) : userNFTs.length > 0 ? (
           <>
             <p className={`${silkscreen.className} mb-4 text-gray-600`}>
-              You own {userNFTs.length} NFT{userNFTs.length !== 1 ? 's' : ''}
+              {userNFTs.length === 1 ? t('ownership', { count: userNFTs.length }) : t('ownershipPlural', { count: userNFTs.length })}
             </p>
 
             {/* 燃烧状态提示 */}
             {burnError && (
               <p className="mb-4 text-red-500">
-                Burn failed: {burnError.message}
+                {t('burnFailed', { message: burnError.message })}
               </p>
             )}
             {isSuccess && hash && (
               <p className="mb-4 text-green-500">
-                NFT burned successfully!{' '}
+                {t('burnSuccess')}{' '}
                 <a
                   href={`https://sepolia.etherscan.io/tx/${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline"
                 >
-                  View transaction
+                  {t('viewTransaction')}
                 </a>
               </p>
             )}
@@ -96,12 +98,12 @@ export default function GalleryPage() {
           </>
         ) : (
           <p className="text-center text-gray-600">
-            You haven&apos;t minted any NFTs yet. Go to the mint page to create one!
+            {t('noNFTs')}
           </p>
         )
       ) : (
         <p className="text-center text-gray-600">
-          Connect your wallet to see your collection
+          {t('connectWallet')}
         </p>
       )}
     </main>

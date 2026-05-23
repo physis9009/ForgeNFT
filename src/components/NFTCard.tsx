@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { UserNFT } from '@/src/hooks/useUserNFTs';
 import { Silkscreen } from 'next/font/google';
+import { useTranslations } from 'next-intl';
 
 const silkscreen = Silkscreen({
   weight: '400',
@@ -17,6 +18,7 @@ interface NFTCardProps {
 }
 
 export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
+  const t = useTranslations('NFTCard');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleBurnClick = (e: React.MouseEvent) => {
@@ -44,7 +46,7 @@ export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
             />
           ) : (
             <div className="w-full min-h-30 bg-wht-gr flex items-center justify-center text-blk-gr">
-              No Image
+              {t('noImage')}
             </div>
           )}
         </div>
@@ -59,9 +61,9 @@ export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
               disabled={isBurning}
               className={`${silkscreen.className} text-xs bg-pnk-gr/90 hover:bg-pnk text-blk px-2 py-0.5 rounded 
               disabled:opacity-50 disabled:cursor-not-allowed shrink-0 border-wht-md`}
-              title="Burn this NFT"
+              title={t('burnTitle')}
             >
-              {isBurning ? '...' : 'Burn'}
+              {isBurning ? t('burningButton') : t('burnButton')}
             </button>
           )}
         </div>
@@ -81,7 +83,7 @@ export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
               className="absolute -top-3 -right-3 z-10 bg-wht-md rounded-full w-6 h-6 flex items-center justify-center 
                 text-pnk hover:text-pnk-gr shadow-md text-lg leading-none"
             >
-              ✕
+              {t('modalCloseButton')}
             </button>
 
             <div className="flex-1 flex items-center justify-center overflow-hidden">
@@ -93,7 +95,7 @@ export function NFTCard({ nft, onBurn, isBurning = false }: NFTCardProps) {
                 />
               ) : (
                 <div className="w-75 h-50 bg-wht-gr flex items-center justify-center text-blk-gr rounded-lg">
-                  No Image Available
+                  {t('modalNoImage')}
                 </div>
               )}
             </div>

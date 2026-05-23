@@ -1,5 +1,93 @@
 {
   "Metadata": {
     "title": "ForgeNFT | Mint & Permanently Store Your NFT on Blockchain"
+  },
+  "Page": {
+    "wrongNetwork": {
+      "title": "Wrong Network",
+      "message": "Please switch to Sepolia testnet",
+      "button": "Switch to Sepolia"
+    },
+    "mainTitle": "Mint your unique NFT",
+    "connected": {
+      "sectionTitle": "Start Minting",
+      "imageLabel": "Image",
+      "chooseImageButton": "Choose Image",
+      "nameLabel": "Name",
+      "namePlaceholder": "NFT Name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "NFT Description",
+      "mintButton": {
+        "uploading": "Uploading to IPFS...",
+        "minting": "Minting...",
+        "default": "Mint NFT"
+      },
+      "uploadError": "Upload Error:",
+      "transactionError": "Transaction Error:",
+      "success": "Success!",
+      "viewOnEtherscan": "View on Etherscan"
+    },
+    "disconnected": {
+      "message": "Please connect wallet to start minting"
+    }
+  },
+  "Footer": {
+    "coreContracts": {
+      "title": "📜 Core Contracts",
+      "mainLabel": "Main :",
+      "copyAddressButton": "Copy address",
+      "viewOnEtherscan": "View on Etherscan",
+      "downloadCopyAbiButton": "Download / Copy ABI",
+      "copyAddressSuccess": "Copied!",
+      "copyAddressError": "Failed to copy"
+    },
+    "resources": {
+      "title": "🔗 Resources",
+      "githubRepo": "📦 GitHub Repository",
+      "developerEmail": "📧 Developer Email",
+      "reportIssue": "🐛 Report Issue"
+    },
+    "license": {
+      "title": "⚖️ License",
+      "mitLicense": "MIT License",
+      "copyright": "© 2025 ForgeNFT"
+    },
+    "abiModal": {
+      "title": "Contract ABI (JSON)",
+      "copyButton": "Copy ABI",
+      "downloadButton": "Download JSON",
+      "copySuccess": "Copied!",
+      "copyError": "Failed to copy",
+      "closeButton": "×"
+    }
+  },
+  "Navigation": {
+    "mint": "Mint",
+    "gallery": "Gallery"
+  },
+  "NFTCard": {
+    "noImage": "No Image",
+    "burnButton": "Burn",
+    "burningButton": "...",
+    "burnTitle": "Burn this NFT",
+    "modalCloseButton": "✕",
+    "modalNoImage": "No Image Available"
+  },
+  "GalleryPage": {
+    "titleConnected": "My NFTs",
+    "titleDisconnected": "Recent Mints",
+    "wrongNetwork": {
+      "title": "Wrong Network",
+      "message": "Please switch to Sepolia testnet to view your NFTs",
+      "button": "Switch to Sepolia"
+    },
+    "loading": "Loading your NFTs...",
+    "ownership": "You own {count} NFT",
+    "ownershipPlural": "You own {count} NFTs",
+    "burnFailed": "Burn failed: {message}",
+    "burnSuccess": "NFT burned successfully!",
+    "viewTransaction": "View transaction",
+    "noNFTs": "You haven't minted any NFTs yet. Go to the mint page to create one!",
+    "connectWallet": "Connect your wallet to see your collection"
   }
 }

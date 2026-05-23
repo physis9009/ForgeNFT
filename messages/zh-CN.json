@@ -1,5 +1,93 @@
 {
   "Metadata": {
     "title": "ForgeNFT | 在链上铸造并永久存储您的NFT"
+  },
+  "Page": {
+    "wrongNetwork": {
+      "title": "网络错误",
+      "message": "请切换到 Sepolia 测试网",
+      "button": "切换到 Sepolia"
+    },
+    "mainTitle": "铸造你独特的 NFT",
+    "connected": {
+      "sectionTitle": "开始铸造",
+      "imageLabel": "图片",
+      "chooseImageButton": "选择图片",
+      "nameLabel": "名称",
+      "namePlaceholder": "NFT 名称",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "NFT 描述",
+      "mintButton": {
+        "uploading": "上传到 IPFS 中...",
+        "minting": "铸造中...",
+        "default": "铸造 NFT"
+      },
+      "uploadError": "上传错误：",
+      "transactionError": "交易错误：",
+      "success": "成功！",
+      "viewOnEtherscan": "在 Etherscan 上查看"
+    },
+    "disconnected": {
+      "message": "请连接钱包以开始铸造"
+    }
+  },
+  "Footer": {
+    "coreContracts": {
+      "title": "📜 核心合约",
+      "mainLabel": "主合约 :",
+      "copyAddressButton": "复制地址",
+      "viewOnEtherscan": "在 Etherscan 上查看",
+      "downloadCopyAbiButton": "下载 / 复制 ABI",
+      "copyAddressSuccess": "已复制！",
+      "copyAddressError": "复制失败"
+    },
+    "resources": {
+      "title": "🔗 资源链接",
+      "githubRepo": "📦 GitHub 仓库",
+      "developerEmail": "📧 开发者邮箱",
+      "reportIssue": "🐛 报告问题"
+    },
+    "license": {
+      "title": "⚖️ 许可证",
+      "mitLicense": "MIT 许可证",
+      "copyright": "© 2025 ForgeNFT"
+    },
+    "abiModal": {
+      "title": "合约 ABI (JSON)",
+      "copyButton": "复制 ABI",
+      "downloadButton": "下载 JSON",
+      "copySuccess": "已复制！",
+      "copyError": "复制失败",
+      "closeButton": "×"
+    }
+  },
+  "Navigation": {
+    "mint": "铸造",
+    "gallery": "画廊"
+  },
+  "NFTCard": {
+    "noImage": "无图片",
+    "burnButton": "销毁",
+    "burningButton": "...",
+    "burnTitle": "销毁此 NFT",
+    "modalCloseButton": "✕",
+    "modalNoImage": "无可用图片"
+  },
+  "GalleryPage": {
+    "titleConnected": "我的 NFT",
+    "titleDisconnected": "最新铸造",
+    "wrongNetwork": {
+      "title": "网络错误",
+      "message": "请切换到 Sepolia 测试网以查看您的 NFT",
+      "button": "切换到 Sepolia"
+    },
+    "loading": "正在加载您的 NFT...",
+    "ownership": "您拥有 {count} 个 NFT",
+    "ownershipPlural": "您拥有 {count} 个 NFT",
+    "burnFailed": "销毁失败: {message}",
+    "burnSuccess": "NFT 已成功销毁！",
+    "viewTransaction": "查看交易",
+    "noNFTs": "您还没有铸造任何 NFT。前往铸造页面创建一个吧！",
+    "connectWallet": "连接钱包以查看您的收藏"
   }
 }

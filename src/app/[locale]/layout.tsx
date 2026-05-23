@@ -3,6 +3,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@rainbow-me/rainbowkit';
 import { Providers } from './providers';
+import { getMessages, getLocale } from 'next-intl/server';
 
 export function generateStaticParams() {
   return [{ locale: 'en-US' }, { locale: 'zh-CN' }];
@@ -29,12 +30,14 @@ export default async function LocaleLayout(props: {
   const params = await props.params;
   const locale = params.locale as Locale;
 
+  const messages = await getMessages();
+
   setRequestLocale(locale);
 
   return (
     <html lang={locale}>
       <body className='bg-wht text-blk-md selection:bg-grn-gr selection:text-wht'>
-        <Providers locale={locale}>{children}</Providers>
+        <Providers locale={locale} messages={messages}>{children}</Providers>
       </body>
     </html>
   );

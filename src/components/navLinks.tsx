@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import {type Locale} from '@rainbow-me/rainbowkit';
 import { usePathname } from 'next/navigation';
 import { Silkscreen } from 'next/font/google';
+import { useTranslations } from 'next-intl';
 
 const silkscreen = Silkscreen({
   weight: '400',
@@ -14,22 +15,24 @@ const silkscreen = Silkscreen({
 
 export function MintLink({locale}: {locale: Locale}) {
     const pathName = usePathname();
+    const t = useTranslations('Navigation');
 
     return <Link href={`/${locale}`} className={clsx(`
         no-underline ${silkscreen.className} text-left text-xl font-bold text-blk rounded-md sm:pl-4 sm:pr-4
     `, [
         pathName === `/${locale}` && 'italic cursor-default text-wht bg-grn-gr/50 pointer-events-none',
         pathName !== `/${locale}` && 'hover:shadow-inner hover:shadow-wht-gr'
-    ])}>Mint</Link>
+    ])}>{t('mint')}</Link>
 }
 
 export function GalleryLink({locale}: {locale: Locale}) {
     const pathName = usePathname();
+    const t = useTranslations('Navigation');
 
     return <Link href={`/${locale}/gallery`} className={clsx(`
         no-underline ${silkscreen.className} text-left text-xl font-bold text-blk rounded-md sm:pl-4 sm:pr-4
     `, [
         pathName === `/${locale}/gallery` && 'italic cursor-default text-wht bg-grn-gr/50 pointer-events-none',
         pathName !== `/${locale}/gallery` && 'hover:shadow-inner hover:shadow-wht-gr'
-    ])}>Gallery</Link>
+    ])}>{t('gallery')}</Link>
 }

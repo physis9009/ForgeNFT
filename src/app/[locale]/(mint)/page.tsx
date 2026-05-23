@@ -7,6 +7,7 @@ import { useMintNFT } from '@/src/hooks/useMintNFT';
 import { uploadToPinata, uploadJSONToPinata } from '@/src/lib/ipfs';
 import { generateNFTMetadata } from '@/src/lib/metadata';
 import { Silkscreen } from 'next/font/google';
+import {useTranslations} from 'next-intl';
 
 const silkscreen = Silkscreen({
   weight: '400',
@@ -15,6 +16,8 @@ const silkscreen = Silkscreen({
 });
 
 export default function Page() {
+  const t = useTranslations('Page');
+
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -92,26 +95,26 @@ export default function Page() {
     <div className={`${silkscreen.className} flex-1`}>
       {isWrongNetwork && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mx-4 mt-4 rounded">
-          <p className="font-bold">Wrong Network</p>
-          <p className="text-sm">Please switch to Sepolia testnet</p>
+          <p className="font-bold">{t('wrongNetwork.title')}</p>
+          <p className="text-sm">{t('wrongNetwork.message')}</p>
           <button
             onClick={() => switchChain({ chainId: sepolia.id })}
             className="mt-2 bg-yellow-500 text-white px-4 py-1 rounded text-sm"
           >
-            Switch to Sepolia
+            {t('wrongNetwork.button')}
           </button>
         </div>
       )}
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-16 mt-25 text-center">Mint your unique NFT</h1>
+        <h1 className="text-4xl font-bold mb-16 mt-25 text-center">{t('mainTitle')}</h1>
 
         {isConnected ? (
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6 text-center">Start Minting</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-center">{t('connected.sectionTitle')}</h2>
             <div className="grid grid-cols-6 gap-2 p-6">
               <div className="mb-4 col-span-1 col-start-2">
-                <label className="block mb-2">Image</label>
+                <label className="block mb-2">{t('connected.imageLabel')}</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -124,7 +127,7 @@ export default function Page() {
                   onClick={handleButtonClick}
                   className="px-4 py-2 bg-grn-gr hover:bg-grn text-wht rounded"
                 >
-                  Choose Image
+                  {t('connected.chooseImageButton')}
                 </button>
                 {imagePreview && (
                   <img
@@ -136,23 +139,23 @@ export default function Page() {
               </div>
 
               <div className="mb-4 col-span-3 col-start-3">
-                <label className="block mb-2">Name</label>
+                <label className="block mb-2">{t('connected.nameLabel')}</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full border p-2 rounded"
-                  placeholder="NFT Name"
+                  placeholder={t('connected.namePlaceholder')}
                 />
               </div>
 
               <div className="mb-4 col-span-4 col-start-2">
-                <label className="block mb-2">Description</label>
+                <label className="block mb-2">{t('connected.descriptionLabel')}</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full border p-2 rounded"
-                  placeholder="NFT Description"
+                  placeholder={t('connected.descriptionPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -163,26 +166,26 @@ export default function Page() {
                 className="bg-grn-gr hover:bg-grn text-wht px-4 py-2 rounded disabled:bg-wht-md disabled:text-grn-gr col-span-2 col-start-3 justify-self-center"
               >
                 {isUploading
-                  ? 'Uploading to IPFS...'
+                  ? t('connected.mintButton.upLoading')
                   : isPending || isConfirming
-                  ? 'Minting...'
-                  : 'Mint NFT'}
+                  ? t('connected.mintButton.minting')
+                  : t('connected.mintButton.default')}
               </button>
 
-              {uploadError && <p className="mt-2 text-red-500">Upload Error: {uploadError}</p>}
+              {uploadError && <p className="mt-2 text-red-500">{t('connected.uploadError')} {uploadError}</p>}
 
-              {error && <p className="mt-2 text-red-500">Transaction Error: {error.message}</p>}
+              {error && <p className="mt-2 text-red-500">{t('connected.transactionError')} {error.message}</p>}
 
               {isSuccess && hash && (
                 <p className="mt-2 text-grn">
-                  Success!{' '}
+                  {t('connected.success')}{' '}
                   <a
                     href={`https://sepolia.etherscan.io/tx/${hash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline"
                   >
-                    View on Etherscan
+                    {t('connected.viewOnEtherscan')}
                   </a>
                 </p>
               )}
@@ -192,7 +195,7 @@ export default function Page() {
           </section>
         ) : (
           <section className="mb-12 text-center">
-            <p className="text-lg">Please connect wallet to start minting</p>
+            <p className="text-lg">{t('disconnected.message')}</p>
           </section>
         )}
       </main>

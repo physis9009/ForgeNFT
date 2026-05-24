@@ -133,7 +133,7 @@ export default function Footer() {
               </h3>
               <p className="text-sm mb-1">
                 <Link
-                  href="https://github.com/your-org/your-dapp/blob/main/LICENSE"
+                  href="https://github.com/physis9009/ForgeNFT/blob/main/LICENSE"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-grn-gr hover:text-grn transition"

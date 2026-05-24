@@ -8,6 +8,8 @@ import { useBurnNFT } from '@/src/hooks/useBurnNFT';
 import { NFTCard } from '@/src/components/NFTCard';
 import { Silkscreen } from 'next/font/google';
 import { useTranslations } from 'next-intl';
+import { Suspense } from 'react';
+import CardSkeleton from '@/src/components/card-skeleton';
 
 const silkscreen = Silkscreen({
   weight: '400',
@@ -87,12 +89,14 @@ export default function GalleryPage() {
 
             <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
               {userNFTs.map((nft) => (
-                <NFTCard
-                  key={nft.tokenId.toString()}
-                  nft={nft}
-                  onBurn={handleBurn}
-                  isBurning={burningTokenId === nft.tokenId && (isPending || isConfirming)}
-                />
+                <Suspense fallback={<CardSkeleton />}>
+                  <NFTCard
+                    key={nft.tokenId.toString()}
+                    nft={nft}
+                    onBurn={handleBurn}
+                    isBurning={burningTokenId === nft.tokenId && (isPending || isConfirming)}
+                  />
+                </Suspense>
               ))}
             </div>
           </>

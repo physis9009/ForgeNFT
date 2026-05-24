@@ -89,9 +89,8 @@ export default function GalleryPage() {
 
             <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
               {userNFTs.map((nft) => (
-                <Suspense fallback={<CardSkeleton />}>
+                <Suspense key={nft.tokenId.toString()} fallback={<CardSkeleton />}>
                   <NFTCard
-                    key={nft.tokenId.toString()}
                     nft={nft}
                     onBurn={handleBurn}
                     isBurning={burningTokenId === nft.tokenId && (isPending || isConfirming)}
